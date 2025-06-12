@@ -1,16 +1,19 @@
-## Hi there 👋
+# 👋 Welcome to My World!
 
-<!--
-**Vonshlovens/vonshlovens** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+🚀 **Currently Building:** LLM-powered workflows in Azure, connecting real-world field data with interactive maps.
 
-Here are some ideas to get you started:
+🌱 **Learning Journey:** Deep diving into LLMs and how to best leverage them to make something valuable. Also currently learning DevOps and homelabbing.
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+🤝 **Collaboration Goals:** Eager to team up on projects at the intersection of LLMs, health, and biomechanics.
+
+🛠️ **Seeking Expertise:** Always open to advice on DevOps, cloud architecture, and anything AI.
+
+💬 **Let’s Chat:** Passionate about health & training, the philosophy and psychology of computer science & AI, blockchain possibilities, and all things homelab.
+
+📫 **Reach Out:** shloov@protonmail.com
+
+⚡ **Fun Fact:** I’m a competitive sprinter in the 100m and 200m! Although lately I’ve been more focused on building my skills in the tech world, I still love to train and push my limits on the track.
+
+---
+
+*Let’s innovate, learn, and sprint forward together!*

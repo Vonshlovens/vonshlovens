@@ -1,12 +1,12 @@
-# 👋 Welcome to My World!
+# 😎 Welcome to My World!
 
-🚀 **Currently Building:** LLM-powered workflows in Azure, connecting real-world field data with interactive maps.
+🛠️ **Currently Building:** LLM-powered workflows in Azure, connecting real-world field data with interactive maps.
 
-🌱 **Learning Journey:** Deep diving into LLMs and how to best leverage them to make something valuable. Also currently learning DevOps and homelabbing.
+🚀 **Learning Journey:** Deep diving into LLMs and how to best leverage them to make something valuable. Also currently learning DevOps and homelabbing.
 
 🤝 **Collaboration Goals:** Eager to team up on projects at the intersection of LLMs, health, and biomechanics.
 
-🛠️ **Seeking Expertise:** Always open to advice on DevOps, cloud architecture, and anything AI.
+👨‍🏫 **Seeking Expertise:** Always open to advice on DevOps, cloud architecture, and anything AI.
 
 💬 **Let’s Chat:** Passionate about health & training, the philosophy and psychology of computer science & AI, blockchain possibilities, and all things homelab.
 

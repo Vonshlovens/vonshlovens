@@ -1,10 +1,17 @@
 # 😎 Welcome to My GitHub!
 
-🛠️ **Currently Building:** LLM-powered workflows in Azure, connecting real-world field data with interactive maps.
+🛠️ **Currently Building:** 
+_Work_ 
+- LLM-powered workflows in Azure, connecting real-world field data with interactive maps.
+- Modernizing databases, especially for connecting to LLM applications
+_personal_
+- My portfolio/blog
+_collaboration_
+- A forum built with Svelte and Supabase, with the goal of adding additional technologies in the future
 
 🚀 **Learning Journey:** Deep diving into LLMs and how to best leverage them to make something valuable. Also currently learning DevOps and homelabbing.
 
-🤝 **Collaboration Goals:** Eager to team up on projects at the intersection of LLMs, health, and biomechanics.
+🤝 **Collaboration Goals:** Any projects at the intersection of LLMs, health, and biomechanics. 
 
 👨‍🏫 **Seeking Expertise:** Always open to advice on DevOps, cloud architecture, and anything AI.
 
@@ -12,7 +19,7 @@
 
 📫 **Reach Out:** shloov@protonmail.com
 
-⚡ **Fun Fact:** I’m a competitive sprinter in the 100m and 200m! Although lately I’ve been more focused on building my skills in the tech world, I still love to train and push my limits on the track.
+⚡ **Fun Fact:** I’m a competitive sprinter in the 100m and 200m!
 
 ---
 

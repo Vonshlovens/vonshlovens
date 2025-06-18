@@ -21,9 +21,6 @@ Always open to advice on DevOps, cloud architecture, and anything AI.
 ### 💬 **Let’s Chat** 
 Passionate about health & training, the philosophy and psychology of computer science & AI, blockchain possibilities, and all things homelab.
 
-### 📫 **Reach Out** 
-shloov@protonmail.com
-
 ### ⚡ **Fun Fact** 
 I’m a competitive sprinter in the 100m and 200m!
 

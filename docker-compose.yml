@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vonshlovens/vonshlovens:latest
+    container_name: vonshlovens-app
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - NODE_ENV=production
+    volumes:
+      # Mount source code for development (optional - comment out for production)
+      - ./src:/app/src
+      - ./static:/app/static
+      # Exclude node_modules and build artifacts
+      - /app/.deno-deploy
+      - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - vonshlovens-network
+
+networks:
+  vonshlovens-network:
+    driver: bridge

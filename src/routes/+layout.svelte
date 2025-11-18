@@ -11,6 +11,7 @@
 		<div class="nav-links">
 			<a href="/" class:active={$page.url.pathname === '/'}>Home</a>
 			<a href="/template" class:active={$page.url.pathname === '/template'}>Template</a>
+			<a href="/health" class:active={$page.url.pathname === '/health'}>Health</a>
 		</div>
 	</nav>
 </header>

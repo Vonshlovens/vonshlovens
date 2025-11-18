@@ -51,10 +51,21 @@ Key points:
 
 ```
 /                              → src/routes/+page.svelte (dinosaur list)
+/health                        → src/routes/health/+page.svelte (health dashboard)
+/template                      → src/routes/template/+page.svelte (component testing)
 /api/dinosaurs                 → src/routes/api/dinosaurs/+server.js (GET all)
 /api/dinosaurs/[id]            → src/routes/api/dinosaurs/[id]/+server.ts (GET one)
 /[dinosaur]                    → src/routes/[dinosaur]/+page.svelte (detail page)
 ```
+
+### Layout Structure
+
+The application uses a shared layout ([src/routes/+layout.svelte](src/routes/+layout.svelte)) with:
+
+- Sticky navigation header with brand and page links
+- Active route indicator with gradient underline
+- Responsive design with backdrop blur effects
+- Links: Home, Template, Health
 
 ## Key Configuration Details
 
@@ -81,6 +92,19 @@ The Dockerfile uses a two-stage copy pattern for better layer caching:
 
 **Critical**: The `.dockerignore` excludes `node_modules` because Deno creates symlinks that break Azure CLI uploads on Windows.
 
+### Docker Compose Development
+
+For local development with Docker Compose:
+
+```bash
+docker-compose up
+```
+
+- Mounts `src/` and `static/` for hot-reloading during development
+- Runs on port 8000
+- Excludes `.deno-deploy` and `node_modules` from volume mounts
+- Environment: `NODE_ENV=production`, `PORT=8000`
+
 ## Architectural Decision
 
 The initial commit had a separate Deno API server (`api/main.ts`) running alongside Vite. This was replaced with SvelteKit's built-in API routes (`+server.ts` files) for simpler architecture and deployment. See `DEPLOYMENT.md` for the full evolution.
@@ -98,6 +122,23 @@ All dinosaur entries in `src/routes/api/data.json` follow this structure:
 
 The API handlers search this JSON file by name when serving individual dinosaur requests.
 
+## UI Patterns
+
+### Mouse-Tracking Gradient Effects
+
+The application features interactive button gradients that follow the mouse cursor:
+
+- **Home page**: Dinosaur buttons use CSS custom properties (`--mouse-x`, `--mouse-y`) to create radial gradients that track cursor position
+- **Health page**: Category cards use similar radial gradient hover effects with red/neon theme (`#ff0844` to `#ff6b6b`)
+- **Implementation**: JavaScript updates CSS variables on `mousemove` events, creating smooth gradient transitions
+
+### Theme & Styling
+
+- Dark theme with semi-transparent header (`rgba(15, 23, 42, 0.95)` with backdrop blur)
+- Gradient text and underlines for navigation
+- Consistent hover animations: `translateY(-2px)` lift effect
+- Backdrop blur effects on cards: `blur(10px)`
+
 ## Testing
 
 No testing framework is currently configured. The project includes `svelte-check` for component type checking, which can be run via: `deno run -A npm:svelte-check`
@@ -108,16 +149,16 @@ See `DEPLOYMENT.md` for detailed instructions. Quick reference:
 
 ```bash
 # Build and test Docker image locally
-docker build --tag deno-sveltekit-tutorial .
-docker run -p 8000:8000 deno-sveltekit-tutorial
+docker build --tag vonshlovens .
+docker run -p 8000:8000 vonshlovens
 
 # Deploy to Azure Container Apps (from non-Windows or after rm -rf node_modules)
 az containerapp up \
-  --resource-group deno-sveltekit-tutorial-rg \
-  --name deno-sveltekit-tutorial \
+  --resource-group vonshlovens-rg \
+  --name vonshlovens \
   --ingress external \
   --target-port 8000 \
   --source .
 ```
 
-The project also has a GitHub Actions workflow (`.github/workflows/deno-sveltekit-tutorial-AutoDeployTrigger...yml`) for automatic deployment to Azure Container Apps on push to main branch.
+The project also has a GitHub Actions workflow (`.github/workflows/vonshlovens-AutoDeployTrigger-*.yml`) for automatic deployment to Azure Container Apps on push to main branch.

@@ -16,3 +16,5 @@
 
 - [ ] Links to portfolio projects (Athletics Canada scraping could go here)
   - Showcase selected projects with descriptions and external links.
+
+- [ ] **Design Strategy** - Use Claude Code designer skill and/or Google Stitch/other gemini features, reference Aave and other nice looking sites.

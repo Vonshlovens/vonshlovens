@@ -1,0 +1,139 @@
+# Kanban Board Configuration
+# Manage project tasks with rich metadata, subtasks, and linked specifications
+
+metadata:
+  version: 1.0
+  created: 2026-02-11
+  board_name: "Vonshlovens Development"
+  statuses:
+    - backlog
+    - todo
+    - in_progress
+    - review
+    - done
+  priority_levels:
+    - low
+    - medium
+    - high
+    - critical
+
+tasks:
+  - id: TASK-001
+    title: "Build voice app for phone to add tasks to kanban"
+    description: |
+      Create a voice-enabled mobile application that allows users to add tasks
+      to the kanban board using voice commands. The app should:
+      - Accept voice input via phone
+      - Parse natural language task descriptions
+      - Extract task metadata (priority, due date, labels)
+      - Add tasks to kanban.yaml via API or direct file update
+      - Provide voice confirmation of task creation
+    status: backlog
+    priority: high
+    labels:
+      - voice-interface
+      - mobile
+      - automation
+      - ai-integration
+    assignee: null
+    created_at: 2026-02-11T00:00:00Z
+    updated_at: 2026-02-11T00:00:00Z
+    due_date: null
+    estimated_hours: 40
+    actual_hours: 0
+    spec_files:
+      - path: null
+        description: "Voice app specification (to be created)"
+    dependencies: []
+    blocked_by: []
+    subtasks:
+      - id: TASK-001-1
+        title: "Research voice recognition APIs and frameworks"
+        completed: false
+        assignee: null
+        notes: "Evaluate options: Web Speech API, Google Speech-to-Text, Whisper, etc."
+      - id: TASK-001-2
+        title: "Design voice command grammar and parsing logic"
+        completed: false
+        assignee: null
+        notes: "Define command patterns: 'Add task...', 'Create task with priority high...'"
+      - id: TASK-001-3
+        title: "Build mobile app UI/UX"
+        completed: false
+        assignee: null
+        notes: "Consider React Native, Flutter, or native iOS/Android"
+      - id: TASK-001-4
+        title: "Implement voice input capture and processing"
+        completed: false
+        assignee: null
+        notes: "Handle audio recording, streaming, and transcription"
+      - id: TASK-001-5
+        title: "Create NLP parser for task extraction"
+        completed: false
+        assignee: null
+        notes: "Extract title, description, priority, labels, due dates from natural language"
+      - id: TASK-001-6
+        title: "Build API endpoint for task creation"
+        completed: false
+        assignee: null
+        notes: "Secure endpoint to add tasks to kanban.yaml, consider authentication"
+      - id: TASK-001-7
+        title: "Implement voice confirmation and error handling"
+        completed: false
+        assignee: null
+        notes: "Text-to-speech confirmation, handle parsing errors gracefully"
+      - id: TASK-001-8
+        title: "Test with various voice inputs and accents"
+        completed: false
+        assignee: null
+        notes: "Ensure robustness across different speech patterns"
+      - id: TASK-001-9
+        title: "Deploy and integrate with existing kanban system"
+        completed: false
+        assignee: null
+        notes: "Set up CI/CD, monitoring, and alerting"
+    notes: |
+      Consider integration points:
+      - SvelteKit API routes for task creation endpoint
+      - GitHub Actions for automated kanban.yaml updates
+      - Voice assistant integration (Siri, Google Assistant shortcuts)
+      - Offline support with task queuing
+
+      Technical considerations:
+      - Privacy: ensure voice data isn't stored unnecessarily
+      - Security: authenticate API requests
+      - Performance: optimize speech recognition latency
+    attachments: []
+    comments: []
+
+# Example task template (for reference)
+# - id: TASK-XXX
+#   title: "Task title"
+#   description: "Detailed task description"
+#   status: backlog  # backlog | todo | in_progress | review | done
+#   priority: medium  # low | medium | high | critical
+#   labels: []
+#   assignee: null
+#   created_at: 2026-02-11T00:00:00Z
+#   updated_at: 2026-02-11T00:00:00Z
+#   due_date: null  # ISO 8601 date or null
+#   estimated_hours: 0
+#   actual_hours: 0
+#   spec_files:
+#     - path: "path/to/spec.md"
+#       description: "Specification description"
+#   dependencies:
+#     - TASK-XXX  # Task IDs this task depends on
+#   blocked_by: []
+#   subtasks:
+#     - id: TASK-XXX-Y
+#       title: "Subtask title"
+#       completed: false
+#       assignee: null
+#       notes: "Optional notes"
+#   notes: "Additional context and notes"
+#   attachments: []
+#   comments:
+#     - author: "User Name"
+#       timestamp: 2026-02-11T00:00:00Z
+#       text: "Comment text"

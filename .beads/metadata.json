@@ -2,6 +2,6 @@
   "database": "dolt",
   "backend": "dolt",
   "dolt_mode": "server",
-  "dolt_database": "vonshlovens",
-  "project_id": "fac99214-7a1a-41cb-990f-4b861b9b95e2"
+  "dolt_database": "von",
+  "project_id": "b5a306b3-0d91-44e5-8270-b0834bf25205"
 }

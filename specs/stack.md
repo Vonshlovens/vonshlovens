@@ -6,6 +6,10 @@
 - **Adapter:** `svelte-adapter-bun` — emits a Bun-native server into `/build`.
 - **Language:** TypeScript, strict mode.
 
+## UI
+- **Styling:** Tailwind CSS v4 via `@tailwindcss/vite`. Entry CSS at `src/app.css` imports `tailwindcss`.
+- **Components:** [bits-ui](https://bits-ui.com) is the default headless component library. Reach for it before building primitives (dialog, popover, menu, combobox, etc.) from scratch. Style with Tailwind.
+
 ## Dev workflow
 - `bun run dev` — Vite dev server on `http://localhost:5173`.
 - `bun run build` — production build to `/build`.

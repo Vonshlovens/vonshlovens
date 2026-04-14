@@ -6,6 +6,7 @@ Specifications for this project — both current behavior and aspirational direc
 | --- | --- | --- |
 | [stack.md](stack.md) | Runtime, framework, build, and deployment stack | Current |
 | [routing.md](routing.md) | SvelteKit routing conventions used in this repo | Current |
+| [design.md](design.md) | Design system — palette, typography, motion, components | Aspirational |
 | [security.md](security.md) | Security posture, headers, container hardening, secrets | Aspirational |
 | [deployment.md](deployment.md) | Railway + Docker deployment pipeline | Current |
 

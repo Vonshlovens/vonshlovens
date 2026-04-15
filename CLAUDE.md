@@ -140,6 +140,15 @@ Never use interactive migration commands (e.g., `db:push`) — they require term
 
 **Never modify the database with raw SQL.** Always go through schema changes + migrations. The only exception is fixing a broken migration itself.
 
+## Beads Storage — READ THIS FIRST (overrides the auto-generated section below)
+
+- Storage is a **shared Dolt SQL server hosted on Railway**, reached over Tailscale at `railway-dolt:3306`.
+- **Writes are live.** Every `bd create/update/close` hits the remote server immediately. Other machines/agents see changes instantly.
+- **Do NOT run `bd dolt push` or `bd dolt pull`.** There is no separate sync step — the DB is remote already.
+- `BD_DOLT_AUTO_PUSH=false` and `backup.enabled: false` are intentional. Do not re-enable.
+- If you see "auto-push disabled" or similar messaging, that does **not** mean local-only. The opposite: the DB is remote and live; pushing would be redundant (and was misconfigured previously against a git URL).
+- Connection is via env vars in `~/.bashrc` (`BEADS_DOLT_SERVER_MODE=1` + host/port/user/password). If `bd` complains about connection, the tailnet or env vars are the issue — not local data.
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
 ## Beads Issue Tracker
 

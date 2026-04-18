@@ -6,13 +6,13 @@
 		year?: number;
 	}
 
-	let { title = 'THE RAW INTELLECTUAL', year = new Date().getFullYear() }: Props = $props();
+	let { title = 'VONSHLOVENS', year = new Date().getFullYear() }: Props = $props();
 
 	const links = [
-		{ label: 'Archive', href: '/', active: true },
-		{ label: 'Index', href: '/index' },
-		{ label: 'RSS', href: '/rss.xml' },
-		{ label: 'Streams', href: '/streams' }
+		{ label: 'Writing', href: '/', active: true },
+		{ label: 'Notes', href: '/notes' },
+		{ label: 'About', href: '/about' },
+		{ label: 'RSS', href: '/rss.xml' }
 	];
 </script>
 

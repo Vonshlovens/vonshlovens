@@ -7,50 +7,46 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 
 	const featured = {
-		href: '/posts/weight-of-concrete',
-		title: 'The Weight of Concrete in the Digital Age',
+		href: '/posts/hello-world',
+		title: 'Hello, World',
 		blurb:
-			'An exploration into why heavy, structural aesthetics are making a comeback in the fluid world of web design.',
-		tags: ['Architecture', 'Modernism']
+			'A short note about what this site is, why I started it, and what you can expect to find here.',
+		tags: ['Meta']
 	};
 
 	const secondaries = [
 		{
-			href: '/posts/typography-as-infrastructure',
-			date: '18 OCT 2024',
-			title: 'Typography as Infrastructure',
-			blurb: 'Using Space Grotesk to define physical boundaries within a 12-column grid system.',
-			tags: ['Design', 'Type'],
+			href: '/posts/obsidian-to-blog',
+			date: 'Coming soon',
+			title: 'Obsidian to Blog',
+			blurb: 'How I pipe notes from my vault into this site without losing the parts I like.',
+			tags: ['Workflow'],
 			tone: 'surface-high' as const
 		},
 		{
-			href: '/posts/death-of-the-gradient',
-			date: '12 OCT 2024',
-			title: 'The Death of the Gradient',
-			blurb: 'Why solid color blocks offer more clarity than the skeuomorphism of the early 2010s.',
-			tags: ['Critique'],
+			href: '/posts/why-this-exists',
+			date: 'Coming soon',
+			title: 'Why This Exists',
+			blurb:
+				'Writing in public, thinking out loud, and keeping a record of the things I want to remember.',
+			tags: ['Personal'],
 			tone: 'accent' as const
 		}
 	];
 
 	const wideSecondary = {
-		href: '/posts/grid-as-truth',
-		date: '05 OCT 2024',
-		title: 'Grid as the Ultimate Truth',
+		href: '/notes',
+		date: 'Ongoing',
+		title: 'The Notebook',
 		blurb:
-			"Everything exists within the lines. If it doesn't align, it doesn't belong in the archive.",
-		cta: 'Access Logs'
+			'Rougher, more frequent: reading notes, half-formed ideas, code snippets, and work-in-progress drafts from the Obsidian vault.',
+		cta: 'Browse notes'
 	};
 
 	const collections = [
-		{ n: '01', title: 'Systemic Failure', href: '/c/systemic-failure', meta: 'Essay, Web' },
-		{ n: '02', title: 'Raw Data Input', href: '/c/raw-data-input', meta: 'Research' },
-		{
-			n: '03',
-			title: 'The Anti-Fluid Manifesto',
-			href: '/c/anti-fluid-manifesto',
-			meta: 'Manifesto'
-		}
+		{ n: '01', title: 'Software', href: '/tags/software', meta: 'Essays, notes' },
+		{ n: '02', title: 'Design', href: '/tags/design', meta: 'Essays, notes' },
+		{ n: '03', title: 'Reading', href: '/tags/reading', meta: 'Notes, quotes' }
 	];
 </script>
 
@@ -60,19 +56,17 @@
 		<h1
 			class="mb-12 font-display text-[clamp(3.5rem,10vw,8rem)] font-black uppercase leading-[0.85] tracking-tighter"
 		>
-			The Raw<br />Intellectual
+			Notes &<br />Essays
 		</h1>
 		<div class="grid grid-cols-1 gap-12 border-t-4 border-ink pt-8 md:grid-cols-2">
-			<p
-				class="max-w-xl font-sans text-xl font-medium leading-relaxed md:text-2xl"
-			>
-				A digital broadsheet cataloging the intersection of structural minimalism, archival
-				research, and brutalist web architecture.
+			<p class="max-w-xl font-sans text-xl font-medium leading-relaxed md:text-2xl">
+				A personal site for thinking out loud — software, design, and whatever else I'm
+				working through. Mostly pulled from my Obsidian vault.
 			</p>
 			<div class="flex flex-col items-start justify-end gap-4 md:items-end">
-				<Tag variant="solid">Issue No. 042</Tag>
+				<Tag variant="solid">Eric</Tag>
 				<span class="font-mono text-xs font-bold uppercase tracking-widest">
-					Updated: 24 Oct 2024
+					Since 2026
 				</span>
 			</div>
 		</div>

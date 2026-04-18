@@ -15,13 +15,13 @@
 	}
 
 	let {
-		title = 'BRUTALIST ARCHIVE',
+		title = 'VONSHLOVENS',
 		items = [
-			{ label: 'Archive', href: '/' },
-			{ label: 'Index', href: '/index' },
-			{ label: 'Streams', href: '/streams' }
+			{ label: 'Writing', href: '/' },
+			{ label: 'Notes', href: '/notes' },
+			{ label: 'About', href: '/about' }
 		],
-		active = 'Archive'
+		active = 'Writing'
 	}: Props = $props();
 
 	let menuOpen = $state(false);

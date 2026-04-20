@@ -12,7 +12,7 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<ModeWatcher />
+<ModeWatcher disableTransitions={false} />
 
 <div class="flex min-h-dvh flex-col bg-surface text-ink">
 	<TopAppBar />

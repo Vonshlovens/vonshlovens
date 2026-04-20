@@ -5,8 +5,13 @@ node_modules
 .vercel
 .netlify
 .wrangler
+.deno-deploy
 /.svelte-kit
 /build
+
+# Local scratch
+snapshots/
+.codex/
 
 # OS
 .DS_Store
@@ -29,3 +34,4 @@ vite.config.ts.timestamp-*
 
 # Claude Code runtime
 .claude/scheduled_tasks.lock
+.claude/worktrees/

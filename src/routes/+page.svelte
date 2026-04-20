@@ -7,7 +7,7 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 
 	const featured = {
-		href: '/posts/hello-world',
+		href: '/writing/hello-world',
 		title: 'Hello, World',
 		blurb:
 			'A short note about what this site is, why I started it, and what you can expect to find here.',

@@ -1,7 +1,7 @@
 # Notes API Deployment
 
 > Status: **Aspirational**
-> Last updated: 2026-04-27
+> Last updated: 2026-04-28
 
 How the notes-api stack is built, deployed, and operated. The blog's deployment is unchanged and lives in [`deployment.md`](deployment.md); this spec covers only the notes-api world.
 
@@ -140,18 +140,160 @@ notes.<tailnet-name>.ts.net {
 
 Secrets that should not be in env: Postgres password (docker secret file). Everything else is operator-friendly enough to live in `.env` files in the repo (gitignored).
 
-## Bootstrap
+## Workflow
 
-First-run sequence on a fresh VPS:
+The git repo is the deployment unit. Clone it onto the VPS, build inside Docker, update with `git pull && docker compose up -d --build`. No registry, no `scp`, no CI in v1.
 
-1. `tailscale up --hostname=notes` (one-time; uses pre-auth key).
-2. `docker compose up -d postgres garage` — bring up data services.
-3. `notes/scripts/bootstrap-garage.sh` — creates the cluster layout, the `notes` bucket, and an access key pair. Outputs `GARAGE_ACCESS_KEY` / `GARAGE_SECRET_KEY` to stdout for paste into `.env`.
-4. `docker compose run --rm api sqlx migrate run` — apply migrations.
-5. `docker compose up -d` — bring up everything else.
-6. Verify: `curl https://notes.<tailnet-name>.ts.net/api/v1/healthz` returns `200`.
+### Source of truth
 
-The bootstrap is idempotent — running it twice should be a no-op.
+| Tracked in git | Created on the VPS, never committed |
+| --- | --- |
+| `notes/docker-compose.yml` | `notes/.env` |
+| `notes/Caddyfile` | `notes/secrets/pg_password` |
+| `notes/garage.toml` | Tailscale node identity (`/var/lib/tailscale/`) |
+| `notes/api/` (Dockerfile, source, migrations) | |
+| `notes/admin/` (Dockerfile, source) | |
+| `notes/scripts/*.sh` | |
+| `notes/.env.example` (placeholder values) | |
+
+The Rust API and SvelteKit admin **build on the VPS inside Docker**. Cargo cache mounts in `notes/api/Dockerfile` keep incremental rebuilds in the 30–60 s range:
+
+```dockerfile
+# syntax=docker/dockerfile:1.7
+FROM rust:1-slim AS build
+WORKDIR /app
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+COPY migrations ./migrations
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/app/target \
+    cargo build --release && cp target/release/notes-api /notes-api
+
+FROM debian:bookworm-slim AS runtime
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=build /notes-api /usr/local/bin/notes-api
+CMD ["notes-api"]
+```
+
+Cold builds on a 2–4 GB VPS take 3–8 min; that's acceptable for a personal stack. See [When this stops being right](#when-this-stops-being-right).
+
+### First-time provisioning
+
+```bash
+# 0. Prereqs: docker, docker compose, a non-root user in the docker group.
+
+# 1. Tailscale at the host (one-time; uses a pre-auth key).
+sudo tailscale up --hostname=notes --ssh
+
+# 2. Get the repo on the box. Use a read-only deploy key, NOT a personal SSH key
+#    or a PAT. Generate the key on the VPS, register the public half in GitHub
+#    repo settings → Deploy keys (read-only).
+sudo mkdir -p /opt/vonshlovens && sudo chown "$USER" /opt/vonshlovens
+git clone git@github.com:Vonshlovens/vonshlovens.git /opt/vonshlovens
+cd /opt/vonshlovens/notes
+
+# 3. Secrets — never tracked.
+cp .env.example .env
+$EDITOR .env                                  # NOTES_API_SYNC_TOKEN, NOTES_ADMIN_ALLOWED_USERS, etc.
+mkdir -p secrets
+openssl rand -base64 32 > secrets/pg_password
+chmod 600 secrets/pg_password
+
+# 4. Bring up data services first.
+docker compose up -d postgres garage
+
+# 5. Bootstrap Garage. Prints GARAGE_ACCESS_KEY / GARAGE_SECRET_KEY for paste into .env.
+./scripts/bootstrap-garage.sh
+
+# 6. Apply migrations as a one-shot (not on container start, so a failed
+#    migration doesn't loop-crash the API).
+docker compose run --rm api sqlx migrate run
+
+# 7. Bring up the rest.
+docker compose up -d
+
+# 8. Verify.
+curl -fsS https://notes.<tailnet>.ts.net/api/v1/healthz
+docker compose ps
+```
+
+Bootstrap is idempotent — re-running each step should be a no-op.
+
+### Steady-state update loop
+
+```bash
+cd /opt/vonshlovens
+git fetch && git log --oneline HEAD..origin/main    # peek at incoming
+git pull --ff-only
+
+cd notes
+
+# If a migration shipped, run it BEFORE rebuilding the API.
+docker compose run --rm api sqlx migrate run
+
+# Rebuild only what changed (Postgres / Garage / Caddy almost never change).
+docker compose up -d --build api admin
+
+# Verify.
+docker compose logs -f --tail=50 api
+curl -fsS https://notes.<tailnet>.ts.net/api/v1/healthz
+```
+
+Wrap in `notes/scripts/deploy.sh` so it's one command. Run from the VPS shell or from the laptop:
+
+```bash
+tailscale ssh notes -- "cd /opt/vonshlovens && bash notes/scripts/deploy.sh"
+```
+
+### Rollback
+
+When a deploy goes bad:
+
+```bash
+cd /opt/vonshlovens
+git log --oneline -10
+git checkout <good-sha>
+cd notes
+docker compose up -d --build api admin
+```
+
+Volumes (Postgres, Garage) are untouched — data survives the rollback. Once verified:
+
+- **Code bug only** → fix on `main`, `git checkout main && git pull`, redeploy.
+- **Bad migration shipped** → write a *new* forward-only migration to undo the damage. Don't roll a migration back; that road ends in a corrupted schema.
+
+The discipline that keeps rollback cheap: **migrations are always backward-compatible with the previous API version** for at least one deploy cycle. Add columns with defaults; don't drop columns in the same release that stops writing them.
+
+### Per-service upgrades
+
+| Service | How |
+| --- | --- |
+| API / admin | Steady-state loop above. |
+| Postgres major bump (e.g., 18 → 19) | Planned event: dump, re-deploy with new image, restore. Stay on 18 until pgvector forces a bump. |
+| Garage minor | Drop-in: bump tag in compose, `docker compose up -d garage`. |
+| Garage major | Read release notes; may require cluster maintenance steps. |
+| Caddy | Bump tag in compose, `docker compose up -d caddy`. |
+| Tailscale on host | `tailscale update` from the VPS shell (independent of the stack). |
+
+### Cron / unattended ops
+
+```cron
+# Nightly Postgres dump → Garage backups bucket (see Backups section).
+0 3 * * *  cd /opt/vonshlovens/notes && docker compose run --rm api notes-api backup-db
+
+# Weekly garage-meta tarball → backups bucket.
+0 4 * * 0  cd /opt/vonshlovens/notes && bash scripts/backup-garage-meta.sh
+```
+
+### When this stops being right
+
+Move to "build images in CI, push to GHCR, VPS pulls" when at least one is true:
+
+- Rust rebuilds on the VPS become annoyingly slow (compile times eating evenings).
+- A staging environment is added and identical artifacts must run in both.
+- Someone else starts contributing and the build env on the VPS becomes a snowflake.
+
+For solo on a single VPS, the simpler loop is the right amount of process.
 
 ## Backups
 
@@ -165,14 +307,6 @@ The bootstrap is idempotent — running it twice should be a no-op.
 - Caddy logs are JSON; aggregated into the API's log volume for easy grep.
 - A `/v1/admin/stats` endpoint surfaces: row counts, change_log size, embedding queue depth, Garage bucket usage. The admin dashboard renders this.
 - No external metrics shipper in MVP. If something breaks, `docker compose logs` is the first stop.
-
-## Updates
-
-- **API**: `git pull && docker compose build api && docker compose up -d api`. Migrations run via the migrate sidecar, not on container start (so a failed migration doesn't loop-crash).
-- **Postgres major version bumps**: planned events; require dump-and-restore. Stay on Postgres 18 until pgvector pushes us to bump.
-- **Garage**: minor versions in-place; check release notes for each upgrade.
-- **Caddy**: bump in compose file; restart container.
-- **Admin / blog**: SvelteKit apps don't share a deploy pipeline; admin is `docker compose up -d admin`, blog is unchanged on Railway.
 
 ## Disaster scenarios
 

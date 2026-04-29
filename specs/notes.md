@@ -1,7 +1,7 @@
 # Notes Pipeline
 
 > Status: **Aspirational**
-> Last updated: 2026-04-27
+> Last updated: 2026-04-28
 
 End-to-end flow of how notes authored in Obsidian reach the public blog and the personal admin browser. This spec is the entry point — narrower concerns are split out and linked below.
 
@@ -98,13 +98,14 @@ This keeps the store descriptive: renaming slugs or changing publish state never
 
 ## Blog ↔ notes-api integration
 
-- The blog's `+page.server.ts` load functions call `notes-api` over HTTPS through the Railway↔Tailnet bridge.
+- The blog's `+page.server.ts` load functions call `notes-api` over HTTPS through the Railway↔Tailnet bridge. The base URL is read from the `NOTES_API_BASE` env var (Railway project variable; see [`deployment.md`](deployment.md)).
 - Endpoints used:
   - `GET /v1/notes?type=article&limit=...` — list page
   - `GET /v1/notes/:type/:slug` — single page (with body, tags, frontmatter, resolved attachment URLs)
   - `GET /v1/notes/:type/:slug/backlinks` — sidebar
 - Reads are anonymous and only return published, non-deleted rows; no token required.
 - SvelteKit caches at the load-function layer; `Cache-Control` headers on the API control browser caching of attachments.
+- If `NOTES_API_BASE` is unset, the blog falls back to a build-time fixture so dev iteration works without the bridge. See [`deployment.md`](deployment.md#reaching-notes-api) for the full Railway configuration.
 
 The current hardcoded `src/lib/content/hello-world.ts` fixture in the blog is replaced by these calls once the API is live. The `/writing/[slug]` route already exists (per `routing.md`); only the loader changes.
 

@@ -1,0 +1,8 @@
+# Compose-time secrets and operator config.
+.env
+.env.*
+!.env.example
+secrets/
+
+# Build artifacts.
+api/target/

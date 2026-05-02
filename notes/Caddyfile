@@ -1,0 +1,33 @@
+# Caddy is run with network_mode: host so it can bind directly to the
+# Tailscale interface. We bind explicitly so traffic from the public internet
+# (port 22 is publicly exposed for SSH; everything else should not be) never
+# reaches us. Tailscale Serve / tsnet integration is a future swap.
+
+{$TAILNET_HOSTNAME}.{$TAILNET_DOMAIN} {
+	bind {$TAILSCALE_IP}
+
+	# Admin endpoints — relay Tailscale identity for app-level authz.
+	handle /api/v1/admin/* {
+		request_header X-Tailscale-User-Login {http.request.header.Tailscale-User-Login}
+		reverse_proxy api:3000
+	}
+
+	# Sync + public read endpoints all live under /api/v1; auth is enforced
+	# by the API per-route (bearer token for /sync, anon for /notes).
+	handle /api/v1/* {
+		reverse_proxy api:3000
+	}
+
+	# Content-addressed attachment serving. Aggressive cache because the URL
+	# changes when the bytes change.
+	handle /attach/* {
+		uri strip_prefix /attach
+		header Cache-Control "public, max-age=31536000, immutable"
+		reverse_proxy garage:3900
+	}
+
+	# Catch-all (eventually proxies to the SvelteKit admin app).
+	handle {
+		respond "notes-api is up. Admin UI lands later." 200
+	}
+}

@@ -1,0 +1,90 @@
+# Notes-api stack. Tailscale-only: only Caddy is published, and only on the
+# Tailscale interface. Postgres, Garage, and the API are reachable solely via
+# the internal docker network.
+#
+# First-time setup: see specs/notes-api-deployment.md.
+
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    environment:
+      TAILNET_HOSTNAME: ${TAILNET_HOSTNAME}
+      TAILNET_DOMAIN: ${TAILNET_DOMAIN}
+      TAILSCALE_IP: ${TAILSCALE_IP}
+    depends_on:
+      - api
+
+  postgres:
+    image: pgvector/pgvector:pg18
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: notes
+      POSTGRES_USER: notes
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    secrets:
+      - pg_password
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "notes", "-d", "notes"]
+      interval: 5s
+      retries: 12
+
+  garage:
+    image: dxflrs/garage:v2.3.0
+    restart: unless-stopped
+    volumes:
+      - garage-data:/var/lib/garage/data
+      - garage-meta:/var/lib/garage/meta
+      - ./garage.toml:/etc/garage.toml:ro
+    environment:
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET}
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN}
+      GARAGE_METRICS_TOKEN: ${GARAGE_METRICS_TOKEN}
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://notes@postgres:5432/notes
+      GARAGE_ENDPOINT: http://garage:3900
+      GARAGE_BUCKET: notes
+      RUST_LOG: info,sqlx=warn
+    env_file: ./api/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      garage:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3000/api/v1/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 30s
+
+  # admin (SvelteKit) — defined when the admin app lands. Caddy's catch-all
+  # currently returns a placeholder; uncomment when ./admin/ exists.
+  # admin:
+  #   build: ./admin
+  #   restart: unless-stopped
+  #   environment:
+  #     NOTES_API_BASE: http://api:3000/api/v1
+  #     NOTES_ADMIN_ALLOWED_USERS: ${NOTES_ADMIN_ALLOWED_USERS}
+
+volumes:
+  postgres-data:
+  garage-data:
+  garage-meta:
+  caddy-data:
+  caddy-config:
+
+secrets:
+  pg_password:
+    file: ./secrets/pg_password

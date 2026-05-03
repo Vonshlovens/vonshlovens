@@ -1,7 +1,11 @@
 # Notes API Deployment
 
-> Status: **Aspirational**
-> Last updated: 2026-04-28
+> Status: **Partly implemented** — `notes/` scaffolding is in (compose, Caddyfile,
+> garage.toml, bootstrap-garage.sh, Rust API skeleton with healthchecks). The
+> stack has not yet been brought up on the production VPS. Build-on-VPS is the
+> v1 deploy story documented below; **bd issue von-62h** proposes replacing it
+> with GHCR-based CI/CD before we accumulate operational scar tissue.
+> Last updated: 2026-05-02
 
 How the notes-api stack is built, deployed, and operated. The blog's deployment is unchanged and lives in [`deployment.md`](deployment.md); this spec covers only the notes-api world.
 
@@ -46,7 +50,7 @@ services:
       retries: 12
 
   garage:
-    image: dxflrs/garage:v1.0.1
+    image: dxflrs/garage:v2.3.0
     restart: unless-stopped
     volumes:
       - garage-data:/var/lib/garage/data
@@ -183,6 +187,9 @@ Cold builds on a 2–4 GB VPS take 3–8 min; that's acceptable for a personal s
 # 0. Prereqs: docker, docker compose, a non-root user in the docker group.
 
 # 1. Tailscale at the host (one-time; uses a pre-auth key).
+#    If the host is already on the tailnet under a different name, use
+#    `sudo tailscale set --hostname=notes` instead — it's a hot rename
+#    that doesn't drop the active SSH session.
 sudo tailscale up --hostname=notes --ssh
 
 # 2. Get the repo on the box. Use a read-only deploy key, NOT a personal SSH key
@@ -205,11 +212,10 @@ docker compose up -d postgres garage
 # 5. Bootstrap Garage. Prints GARAGE_ACCESS_KEY / GARAGE_SECRET_KEY for paste into .env.
 ./scripts/bootstrap-garage.sh
 
-# 6. Apply migrations as a one-shot (not on container start, so a failed
-#    migration doesn't loop-crash the API).
-docker compose run --rm api sqlx migrate run
-
-# 7. Bring up the rest.
+# 6. Bring up the rest. The API embeds migrations via sqlx::migrate!() and
+#    runs them in a tokio task at boot — see ADR 0007. The container will
+#    answer /healthz immediately and /readyz once migrations finish; a
+#    failed migration leaves /readyz at 503 (visible in `docker compose logs api`).
 docker compose up -d
 
 # 8. Verify.
@@ -228,10 +234,10 @@ git pull --ff-only
 
 cd notes
 
-# If a migration shipped, run it BEFORE rebuilding the API.
-docker compose run --rm api sqlx migrate run
-
 # Rebuild only what changed (Postgres / Garage / Caddy almost never change).
+# Migrations are embedded in the binary and run in a tokio task at boot;
+# the new container will be /healthz-up immediately and /readyz-up once
+# migrations finish (or stuck at /readyz: 503 if they fail — check logs).
 docker compose up -d --build api admin
 
 # Verify.

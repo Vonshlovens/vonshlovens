@@ -1,7 +1,8 @@
 # Notes Storage
 
-> Status: **Aspirational**
-> Last updated: 2026-04-27
+> Status: **Partly implemented** — `notes/garage.toml` and the bootstrap
+> script exist; the cluster has not yet been initialized on the production VPS.
+> Last updated: 2026-05-02
 
 How non-markdown attachments are stored, served, and addressed. The store is **Garage**, an open-source S3-compatible object store. See [`notes-data-model.md`](notes-data-model.md) for the metadata table.
 
@@ -78,17 +79,17 @@ The notes-api docker-compose includes Garage configured for single-node mode:
 
 ```yaml
 garage:
-  image: dxflrs/garage:v1.0.1
+  image: dxflrs/garage:v2.3.0
   volumes:
     - garage-data:/var/lib/garage/data
     - garage-meta:/var/lib/garage/meta
     - ./garage.toml:/etc/garage.toml:ro
   ports:
     - "127.0.0.1:3900:3900"   # S3 API, bound to localhost only
-    - "127.0.0.1:3902:3902"   # admin API
+    - "127.0.0.1:3902:3902"   # web/static (unused; admin API is :3903)
 ```
 
-`garage.toml` uses `replication_mode = "none"` for dev. First-run bootstrap (creating the layout, the bucket, and an access key) is captured in a `notes/scripts/bootstrap-garage.sh` so it's reproducible — see [`notes-api-deployment.md`](notes-api-deployment.md).
+`garage.toml` uses `replication_factor = 1` for single-node (the v2 successor to v1's `replication_mode = "none"`). Secrets (`rpc_secret`, `admin_token`, `metrics_token`) are supplied via env vars (`GARAGE_RPC_SECRET`, `GARAGE_ADMIN_TOKEN`, `GARAGE_METRICS_TOKEN`) so the TOML stays committable. See [ADR 0006](../notes/docs/adr/0006-garage-v2.md). First-run bootstrap (creating the layout, the bucket, and an access key) is captured in `notes/scripts/bootstrap-garage.sh` so it's reproducible — see [`notes-api-deployment.md`](notes-api-deployment.md).
 
 ## Limits
 

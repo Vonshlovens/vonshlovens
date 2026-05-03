@@ -8,7 +8,12 @@ This file provides essential guidance to AI coding assistants working in this co
 
 **vonshlovens** is a personal blog. Its purpose is simple: share what I know. If it lands right, it also proves that knowledge and shows taste — so treat craft as part of the product, not polish applied after the fact. Writing quality, typography, layout rhythm, load behavior, and the code itself are all on-stage.
 
-Stack is SvelteKit 5 (runes) on Bun, deployed to Railway via Docker. See `specs/` for details and `docs/` for design notes, ADRs, and in-flight plans.
+The repo carries two stacks:
+
+- **Blog** (`src/`, `static/`, `Dockerfile`, `railway.toml`) — SvelteKit 5 (runes) on Bun, deployed to Railway via Docker. The reader-facing site.
+- **notes-api** (`notes/`) — self-hosted sync target for the Obsidian vault and read source for the blog. Postgres (pgvector) + Garage S3 + Rust+Axum API + Caddy on a Tailscale-only VPS. Lives entirely under `notes/`; the blog reaches it over the tailnet via the Railway tailscale-bridge service. Stack-specific ADRs in `notes/docs/adr/`. The VPS is reachable as `ssh notes` from the operator's laptop.
+
+See `specs/` for cross-cutting designs (both stacks), and `docs/` for repo-wide design notes, ADRs, and in-flight plans.
 
 ## Specifications
 

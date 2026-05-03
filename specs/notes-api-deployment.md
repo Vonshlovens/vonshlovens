@@ -186,10 +186,20 @@ Cold builds on a 2–4 GB VPS take 3–8 min; that's acceptable for a personal s
 ```bash
 # 0. Prereqs: docker, docker compose, a non-root user in the docker group.
 
-# 1. Tailscale at the host (one-time; uses a pre-auth key).
-#    If the host is already on the tailnet under a different name, use
-#    `sudo tailscale set --hostname=notes` instead — it's a hot rename
-#    that doesn't drop the active SSH session.
+# 1a. Linux hostname. Most cloud images ship with a generic name
+#     (`srv1131999`, `ubuntu-docker`, etc.). Rename the kernel hostname so
+#     `uname -n`, the shell prompt, and logs all read `notes`.
+sudo hostnamectl set-hostname notes
+# /etc/hosts may have stale 127.0.1.1 entries from prior re-provisionings;
+# clean it down to one `127.0.1.1 notes` line. cloud-init typically does
+# NOT actively manage /etc/hosts on standard cloud images (the warnings
+# inside the file come from unused distro template files), so a manual
+# edit is durable across reboots.
+
+# 1b. Tailscale at the host (one-time; uses a pre-auth key).
+#     If the host is already on the tailnet under a different name, use
+#     `sudo tailscale set --hostname=notes` instead — it's a hot rename
+#     that doesn't drop the active SSH session.
 sudo tailscale up --hostname=notes --ssh
 
 # 2. Get the repo on the box. Use a read-only deploy key, NOT a personal SSH key

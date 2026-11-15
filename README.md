@@ -13,4 +13,3 @@ I'm a software developer in the land management industry, currently working on a
 ## Find me
 
 - Portfolio: [ericevans.dev](https://ericevans.dev)
--
